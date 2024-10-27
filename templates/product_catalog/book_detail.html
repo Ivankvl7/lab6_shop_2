@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="img-fluid" alt="{{ book.title }} cover">
+            {% else %}
+            <img src="{% static 'images/default_cover.jpg' %}" class="img-fluid" alt="Default cover">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h2>{{ book.title }}</h2>
+            <p><strong>Author(s):</strong> {% for author in book.author.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            <p><strong>Category:</strong> {% for category in book.category.all %}{{ category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            <p><strong>Publisher:</strong> {{ book.publisher.name }}</p>
+            <p><strong>Publication Date:</strong> {{ book.publication_date }}</p>
+            <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+            <p><strong>Price:</strong> ${{ book.price }}</p>
+            <p><strong>Stock:</strong> {{ book.stock }} available</p>
+            <p><strong>Description:</strong> {{ book.description }}</p>
+            {% if user.is_authenticated  %}
+            <a href="{% url 'add_to_cart' user.id book.id %}" class="btn btn-primary">Add to Cart</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

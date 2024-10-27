@@ -1,0 +1,61 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    {% if orders %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Total Price</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.get_status_display }}</td>
+                <td>{{ order.created_at }}</td>
+                <td>${{ order.total_price }}</td>
+                <td>
+ <button class="btn btn-link toggle-btn" type="button" data-bs-toggle="collapse" data-bs-target="#orderItems{{ order.id }}" aria-expanded="false" aria-controls="orderItems{{ order.id }}">
+    View Items
+</button>
+                </td>
+            </tr>
+            <tr class="collapse" id="orderItems{{ order.id }}">
+                <td colspan="5">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>{{ item.book.title }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>${{ item.price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You have no orders yet. <a href="{% url 'home' %}">Continue shopping</a></p>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

@@ -1,0 +1,75 @@
+# Виртуальное окружение
+venv/
+env/
+.venv/
+.env/
+ENV/
+.ENV/
+
+# Файлы настроек среды
+*.env
+*.env.*
+!example.env
+
+# Системные файлы и временные файлы
+*.DS_Store
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.sqlite3
+db.sqlite3
+*.log
+
+# Исключаем IDE и редакторы
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Секретные ключи и конфиденциальные файлы
+config/settings/local.py
+config/settings/*.local.py
+
+# Статические файлы, загруженные медиа и миграции
+staticfiles/
+media/
+static/
+node_modules/
+migrations/
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Компиляция и тестирование
+*.coverage
+.coverage.*
+.cache
+coverage.xml
+nosetests.xml
+test_*.xml
+reports/
+
+# Деплой и управление
+*.pot
+*.mo
+*.pyc
+*.pyo
+*.pyd
+
+# Docker и другие контейнеры
+Dockerfile
+docker-compose.yml
+*.docker
+**/*.dockerfile
+
+# Jupyter и другие временные файлы
+.ipynb_checkpoints/
+*.ipynb
+.ipynb/
+
+# Профилирование и отладка
+*.prof
+
+# Личные заметки
+notes.txt
