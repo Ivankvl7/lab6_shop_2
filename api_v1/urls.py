@@ -5,11 +5,12 @@ from api_v1 import views
 
 
 router = routers.DefaultRouter()
-router.register(r'books', viewset=views.BookViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('books/', views.BookListCreateView.as_view(), name='books'),
+    path('book/<int:pk>/', views.BookRetrieveUpdateDestroyView.as_view(), name='book'),
     path('orders/', views.OrderListView.as_view()),
     path('orders/<int:user_id>/', views.UserOrderListView.as_view())
 ]

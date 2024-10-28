@@ -3,21 +3,25 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from product_catalog.models import Book
 from order.models import Order, OrderItem
-from rest_framework.generics import ListAPIView
+from rest_framework import generics
 from rest_framework.views import Response
 
 
-class BookViewSet(viewsets.ModelViewSet):
+class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
 
 
-class OrderListView(ListAPIView):
+class BookRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+
+class OrderListView(generics.ListAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-class UserOrderListView(ListAPIView):
+
+class UserOrderListView(generics.ListAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 

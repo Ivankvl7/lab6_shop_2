@@ -7,7 +7,7 @@ from order.models import Order, OrderItem
 class BookSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Book
-        fields = ['title', 'description', 'price', 'stock']
+        fields = ['title', 'description', 'price', 'stock', 'isbn', 'publication_date']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

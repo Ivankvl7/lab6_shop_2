@@ -145,7 +145,8 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-FERNET_KEY = b'cs-gDC4WgmhXNBqex1nbQIzElejEu2COWewmMbdDJeM='
+FERNET_KEY = env('FERNET_KEY').encode()
+print(FERNET_KEY)
 fernet = Fernet(FERNET_KEY)
 redis_pass = fernet.decrypt(env('redis_pass').encode()).decode()
 redis = Redis(

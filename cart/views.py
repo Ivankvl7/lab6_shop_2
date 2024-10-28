@@ -1,9 +1,8 @@
 import json
 
 from collections import defaultdict
-from .models import Cart, CartItem
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from .models import CartItem
+from django.shortcuts import redirect
 from django.views.generic import ListView
 
 from lab6_shop.settings import redis
@@ -14,12 +13,12 @@ def get_cart_items(user_id):
     res = []
     items = defaultdict(int)
     user_cart = redis.hget('user_cart', user_id)
-    print(f"user_cart = {user_cart}")
+    # print(f"user_cart = {user_cart}")
     if user_cart is not None:
         user_cart = json.loads(user_cart.decode())
         for index, item_id in enumerate(user_cart):
             items[item_id] = items[item_id] + 1
-            print(f"items={items}")
+            # print(f"items={items}")
         for item_id, quantity in items.items():
             book = Book.objects.get(pk=item_id)
             res.append(CartItem(book=book, quantity=items[item_id]))
