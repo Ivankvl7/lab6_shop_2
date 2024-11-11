@@ -34,7 +34,11 @@
     </table>
     <div class="d-flex justify-content-between">
         <h4>Total: ${{ total_price }}</h4>
-        <a href="{% url 'order_payment' user.id %}" class="btn btn-success">Proceed with payment</a>
+        <form action="{% url 'order_payment' user.id %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="user_id" value="{{ user.id }}">
+    <button type="submit" class="btn btn-success">Proceed with payment</button>
+</form>
     </div>
     {% else %}
         {%  if message %}

@@ -13,7 +13,6 @@ def get_cart_items(user_id):
     res = []
     items = defaultdict(int)
     user_cart = redis.hget('user_cart', user_id)
-    # print(f"user_cart = {user_cart}")
     if user_cart is not None:
         user_cart = json.loads(user_cart.decode())
         for index, item_id in enumerate(user_cart):
@@ -22,9 +21,8 @@ def get_cart_items(user_id):
         for item_id, quantity in items.items():
             book = Book.objects.get(pk=item_id)
             res.append(CartItem(book=book, quantity=items[item_id]))
-
-    print(f"res in get_cart_items = {res}")
     return res
+
 
 def get_total_price(user_id):
     items = get_cart_items(user_id)
@@ -32,6 +30,7 @@ def get_total_price(user_id):
     for item in items:
         total_price += (item.quantity * item.book.price)
     return total_price
+
 
 class CartListView(ListView):
     template_name = 'cart/cart.html'
@@ -41,7 +40,7 @@ class CartListView(ListView):
     def get_queryset(self):
         user_id = self.request.user.id
         res = get_cart_items(user_id)
-        print(f"query_set = {res}")
+        # print(f"query_set = {res}")
         return res
 
     def get_context_data(self, **kwargs):

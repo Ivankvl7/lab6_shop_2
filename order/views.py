@@ -13,12 +13,12 @@ from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.models import User
 from cart.views import get_cart_items
+from lab6_shop.settings import redis
 
 
 class OrderPaymentView(View):
-    def get(self, request, *args, **kwargs):
-        user_id = self.kwargs.get('user_id')
-
+    @staticmethod
+    def get_order_info(user_id):
         cart_items = get_cart_items(user_id)
         total_price = 0
         new_order = Order(
@@ -26,18 +26,19 @@ class OrderPaymentView(View):
             created_at=timezone.now(),
             total_price=total_price
         )
-
         order_items = []
         for item in cart_items:
             total_price += item.book.price * item.quantity
-            order_item = OrderItem(
-                order=new_order,
-                book=item.book,
-                quantity=item.quantity,
-                price=item.quantity * item.book.price
+            order_item = OrderItem(order=new_order, book=item.book, quantity=item.quantity,
+                                   price=item.quantity * item.book.price
             )
             order_items.append(order_item)
+        return total_price, new_order, order_items
 
+    def post(self, request, *args, **kwargs):
+
+        user_id = kwargs.get('user_id')
+        total_price, new_order, order_items = self.get_order_info(user_id)
 
         # Формируем данные для POST запроса
         data = {
@@ -47,9 +48,10 @@ class OrderPaymentView(View):
         message = 'Payment failed. Insufficient funds. Please try again.'
 
         try:
-            response = requests.post('http://localhost:8080/api/v1/payment_proceed', json=data)
-            print(response)
+            response = requests.post('http://localhost:8080/api/v1/payment/', json=data)
 
+            # !!!
+            print(response.status_code)
             # Обрабатываем ответ
             if response.status_code == 200:
                 # сохраняем заказ
@@ -58,42 +60,26 @@ class OrderPaymentView(View):
 
                 for item in order_items:
                     item.save()
-                return HttpResponseRedirect(reverse('order_list', kwargs={'user_id': user_id}))
+                redis.hdel('user_cart', user_id)
+                return HttpResponseRedirect(reverse('order_history', kwargs={'user_id': user_id}))
 
             else:
-                return render(request, 'cart/cart.html', {'user_id': user_id, 'message': message, 'cart_items': get_cart_items(user_id)})
+                return render(request, 'cart/cart.html',
+                              {'user_id': user_id, 'message': message, 'cart_items': get_cart_items(user_id)})
         except Exception:
             # messages.error(request, 'Payment failed. Please try again.')
-            return render(request, 'cart/cart.html', {'user_id': user_id, 'message': message, 'cart_items': get_cart_items(user_id)})
-
-
-def order_payment(request):
-    user_id = request.user.id
-    cart_items = get_cart_items(user_id)
-    total_price = 0
-    for item in cart_items:
-        total_price += item.book.price * item.quantity
-
-    max_id = Order.objects.aggregate(Max('id'))['id__max']
-
-    # Если записи нет (max_id равен None), начинаем с 1
-    if max_id is None:
-        max_id = 1
-    else:
-        max_id += 1
-
-    new_order = Order(customer=Profile.objects.get(user__id=user_id), total_price=total_price)
-    new_order.save()
+            return render(request, 'cart/cart.html',
+                          {'user_id': user_id, 'message': "Ошибка выполнение запроса", 'cart_items': get_cart_items(user_id)})
 
 
 class OrderListView(ListView):
     model = Order
-    template_name = 'order/order_list.html'  # Укажите шаблон для отображения заказов
+    template_name = 'order/order_list.html'
     context_object_name = 'orders'
 
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
-        print(user_id)
+        # print(user_id)
         profile = Profile.objects.get(user__id=user_id)
         return Order.objects.filter(customer=profile)
 
