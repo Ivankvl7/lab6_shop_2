@@ -8,7 +8,7 @@ from order.models import Order, OrderItem
 from rest_framework import generics
 from rest_framework.views import Response
 from lab6_shop.settings import redis
-
+from rest_framework import generics, permissions
 
 class BookListCreateView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
@@ -18,6 +18,8 @@ class BookListCreateView(generics.ListCreateAPIView):
 class BookRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
 
 
 class OrderListView(generics.ListAPIView):
